@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
+import { registerUser, loginUser} from '../api/Auth'; 
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -34,10 +35,38 @@ const Navbar = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSignSubmit = async (e) => {
     e.preventDefault();
-    // Add your signup logic here
-    console.log(formData);
+    try {
+      const response = await registerUser(formData); 
+      console.log('Registration successful:', response);
+    
+  
+      setFormData({
+        email: '',
+        password: '',
+        rememberMe: false,
+      });
+    } catch (error) {
+      console.error('Error registering:', error);
+    
+    }
+  };
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await loginUser(formData); 
+      console.log('Login successful:', response);
+      setFormData({
+        email: '',
+        password: '',
+        rememberMe: false,
+      });
+    } catch (error) {
+      console.error('Error:', error);
+   
+    }
   };
 
   const handleClickOutside = (e) => {
@@ -60,7 +89,7 @@ const Navbar = () => {
       </div>
       {showSignUp && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={handleClickOutside}>
-          <form ref={formRef} onSubmit={handleSubmit} className="bg-black p-8 rounded-md shadow-md max-w-md w-full text-white">
+          <form ref={formRef} onSubmit={handleSignSubmit} className="bg-black p-8 rounded-md shadow-md max-w-md w-full text-white">
             <h2 className="text-3xl font-semibold mb-4 text-center text-[#00df9a]">CoinCraze </h2>
             <div className="mb-6">
               <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
@@ -102,13 +131,47 @@ const Navbar = () => {
           </form>
         </div>
       )}
-      {showLogin && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <form className="bg-white p-8 rounded-md shadow-md max-w-md w-full">
-            {/* Your Login form elements go here */}
-            <button className="block bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-              Get Started
-            </button>
+      {showLogin &&(
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={handleClickOutside}>
+          <form ref={formRef} onSubmit={handleLoginSubmit} className="bg-black p-8 rounded-md shadow-md max-w-md w-full text-white">
+            <h2 className="text-3xl font-semibold mb-4 text-center text-[#00df9a]">CoinCraze </h2>
+            <div className="mb-6">
+              <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-white rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-gray-500"
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-white rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-gray-500"
+                required
+              />
+            </div>
+            <div className="mb-6 flex items-center">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                name="rememberMe"
+                checked={formData.rememberMe}
+                onChange={handleChange}
+                className="rounded-sm mr-2"
+              />
+              <label htmlFor="rememberMe" className="text-sm">Remember me</label>
+            </div>
+            <button type="submit" className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-green-200 focus:ring-opacity-50">Login</button>
+            <p className="mt-2 text-sm">Already have an account? <span className="text-blue-500 cursor-pointer" onClick={handleLogin}>Login here</span></p>
           </form>
         </div>
       )}
